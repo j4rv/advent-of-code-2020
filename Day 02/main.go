@@ -1,9 +1,9 @@
 package main
 
 import (
-	"strconv"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -22,10 +22,10 @@ func main() {
 		char := rowData[charGroupIndex]
 		pass := rowData[passGroupIndex]
 
-		 // minus one because even if the string does not contain the char, its length is still one
+		// minus one because even if the string does not contain the char, its length is still one
 		charCount := len(strings.Split(pass, char)) - 1
 
-		// policy: char must appear at least "min" times and "max" times at most 
+		// policy: char must appear at least "min" times and "max" times at most
 		if min <= charCount && charCount <= max {
 			//log.Println(rowDataStr, charCount, "valid!")
 			counter1++
@@ -46,8 +46,12 @@ func main() {
 
 		// policy: char must appear exactly once at either index1 or index2
 		charCount := 0
-		if string(pass[index1]) == char { charCount++ }
-		if string(pass[index2]) == char { charCount++ }
+		if string(pass[index1]) == char {
+			charCount++
+		}
+		if string(pass[index2]) == char {
+			charCount++
+		}
 		if charCount == 1 {
 			//log.Println(rowDataStr, charCount, "valid!")
 			counter2++

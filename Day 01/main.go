@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -17,25 +17,25 @@ func main() {
 		}
 		nums = append(nums, n)
 	}
-	
+
 	// no reason to optimize for that data size
 	for _, n1 := range nums {
 		for _, n2 := range nums {
-			if n1 + n2 == 2020 {
+			if n1+n2 == 2020 {
 				log.Println("Found entries for response 1:", n1, n2)
-				log.Println("Response (1):", n1 * n2)
+				log.Println("Response (1):", n1*n2)
 				goto part_two // breaks both for, using the forbidden keyword
 			}
 		}
 	}
 
-	part_two:
+part_two:
 	for _, n1 := range nums {
 		for _, n2 := range nums {
 			for _, n3 := range nums {
-				if n1 + n2 + n3 == 2020 {
+				if n1+n2+n3 == 2020 {
 					log.Println("Found entries for response 2:", n1, n2, n3)
-					log.Println("Response (2):", n1 * n2 * n3)
+					log.Println("Response (2):", n1*n2*n3)
 					os.Exit(0)
 				}
 			}
