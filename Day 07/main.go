@@ -22,7 +22,6 @@ func main() {
 
 		// children are split by commas
 		for _, rawChild := range strings.Split(rawChildren, ", ") {
-			bagsGraph.addNode(parentKey)
 			if rawChild == "no other bags" {
 				continue
 			}
@@ -30,9 +29,12 @@ func main() {
 			if len(childData) == 0 {
 				log.Fatal("Child data did not match regex:", childData)
 			}
-			amount, _ := strconv.Atoi(childData[1])
+			weight, err := strconv.Atoi(childData[1])
+			if err != nil {
+				panic(err) // should never happen because of the regex match
+			}
 			childKey := childData[2]
-			bagsGraph.addContent(parentKey, childKey, amount)
+			bagsGraph.addWeightedChildToParent(parentKey, childKey, weight)
 		}
 	}
 
@@ -80,8 +82,8 @@ func (g *graph) addNode(key string) *node {
 
 // parentKey: bag container key, ex: "bright white"
 // childKey:  bag contained by parent, ex: "shiny gold"
-// amount:    amount of child bags contained by the parent
-func (g *graph) addContent(parentKey string, childKey string, amount int) {
+// weight:    amount of child bags contained by the parent
+func (g *graph) addWeightedChildToParent(parentKey string, childKey string, weight int) {
 	// get or add parent node
 	parent, ok := g.keysToNodes[parentKey]
 	if !ok {
@@ -93,7 +95,7 @@ func (g *graph) addContent(parentKey string, childKey string, amount int) {
 		child = g.addNode(childKey)
 	}
 	// add weighted edge
-	parentToChild := edge{parent: parent, child: child, weight: amount}
+	parentToChild := edge{parent: parent, child: child, weight: weight}
 	parent.childEdges = append(parent.childEdges, parentToChild)
 	child.parentEdges = append(child.parentEdges, parentToChild)
 }
