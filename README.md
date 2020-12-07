@@ -8,11 +8,11 @@ Getting the module:
 
 ```
 go get -u github.com/j4rv/advent-of-code-2020
-go run "github.com/j4rv/advent-of-code-2020/Day XX"
+go run github.com/j4rv/advent-of-code-2020/day-XX
 ```
 
 OR cloning the repo, and running from the root directory:
 
 ```
-go run "github.com/j4rv/advent-of-code-2020/Day XX"
+go run github.com/j4rv/advent-of-code-2020/day-XX
 ```
