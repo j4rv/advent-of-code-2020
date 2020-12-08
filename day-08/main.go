@@ -21,7 +21,7 @@ func main() {
 var errLoopDetected error = errors.New("loop detected")
 
 type instruction struct {
-	timesExec int // counter of how many times the instruction has been executed
+	executed  bool
 	operation string
 	argument  int
 }
@@ -65,7 +65,6 @@ func newProgram(rawProgram string) *program {
 
 func (p *program) execNext() {
 	inst := p.instructions[p.nextInstIndex]
-	inst.timesExec++
 
 	switch inst.operation {
 	case opNop:
@@ -78,6 +77,8 @@ func (p *program) execNext() {
 	default:
 		panic("unsupported operation: " + inst.operation)
 	}
+
+	inst.executed = true
 }
 
 // run returns errLoopDetected if an instruction was going to be executed twice
@@ -88,7 +89,7 @@ func (p *program) run() error {
 		}
 
 		nextInst := p.instructions[p.nextInstIndex]
-		if nextInst.timesExec > 0 {
+		if nextInst.executed {
 			return errLoopDetected
 		}
 		p.execNext()
@@ -122,8 +123,8 @@ func (p *program) fixInfiniteLoop() {
 
 func (p *program) reset() {
 	p.accumulator = 0
-	for _, inst := range p.instructions {
-		inst.timesExec = 0
-	}
 	p.nextInstIndex = 0
+	for _, inst := range p.instructions {
+		inst.executed = false
+	}
 }
