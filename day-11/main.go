@@ -51,13 +51,13 @@ func newFerry(rawFerry string) *ferry {
 	return initialState
 }
 
+var runeWeight = map[rune]int{occupied: 1} // free seats, floor and out-of-bounds are counted as Zero
+
 func (f *ferry) countAllOccupiedSeats() int {
-	runeToWeight := make(map[rune]int, 1)
-	runeToWeight[occupied] = 1 // free seats, floor and out-of-bounds are counted as Zero
 	var count int
 	for x := 0; x < f.width; x++ {
 		for y := 0; y < f.height; y++ {
-			count += runeToWeight[f.cells[coords{x, y}]]
+			count += runeWeight[f.cells[coords{x, y}]]
 		}
 	}
 	return count
@@ -72,7 +72,7 @@ func calcPartOne(initialState *ferry) {
 		renderState(initialState, "part_one(0).png")
 	}
 	state, changes := initialState.nextStateUsingAdjacents()
-	iteration := 1 // we have already made an iteration
+	iteration := 1 // we have already done an iteration
 	for {
 		if renderStates {
 			renderState(state, "part_one("+fmt.Sprint(iteration)+").png")
@@ -121,19 +121,17 @@ func (f *ferry) nextStateUsingAdjacents() (newState *ferry, alterations int) {
 }
 
 func (f *ferry) countAdjacentOccupiedSeats(c coords) int {
-	runeToWeight := make(map[rune]int, 1)
-	runeToWeight[occupied] = 1 // free seats, floor and out-of-bounds are counted as Zero
 	var count int
-	count += runeToWeight[f.cells[coords{c.x - 1, c.y - 1}]]
-	count += runeToWeight[f.cells[coords{c.x - 1, c.y + 0}]]
-	count += runeToWeight[f.cells[coords{c.x - 1, c.y + 1}]]
+	count += runeWeight[f.cells[coords{c.x - 1, c.y - 1}]]
+	count += runeWeight[f.cells[coords{c.x - 1, c.y + 0}]]
+	count += runeWeight[f.cells[coords{c.x - 1, c.y + 1}]]
 
-	count += runeToWeight[f.cells[coords{c.x + 0, c.y - 1}]]
-	count += runeToWeight[f.cells[coords{c.x + 0, c.y + 1}]]
+	count += runeWeight[f.cells[coords{c.x + 0, c.y - 1}]]
+	count += runeWeight[f.cells[coords{c.x + 0, c.y + 1}]]
 
-	count += runeToWeight[f.cells[coords{c.x + 1, c.y - 1}]]
-	count += runeToWeight[f.cells[coords{c.x + 1, c.y + 0}]]
-	count += runeToWeight[f.cells[coords{c.x + 1, c.y + 1}]]
+	count += runeWeight[f.cells[coords{c.x + 1, c.y - 1}]]
+	count += runeWeight[f.cells[coords{c.x + 1, c.y + 0}]]
+	count += runeWeight[f.cells[coords{c.x + 1, c.y + 1}]]
 	return count
 }
 
@@ -146,7 +144,7 @@ func calcPartTwo(initialState *ferry) {
 		renderState(initialState, "part_two(0).png")
 	}
 	state, changes := initialState.nextStateUsingVisibles()
-	iteration := 1 // we have already made an iteration
+	iteration := 1 // we have already done an iteration
 	for {
 		if renderStates {
 			renderState(state, "part_two("+fmt.Sprint(iteration)+").png")
@@ -195,19 +193,17 @@ func (f *ferry) nextStateUsingVisibles() (newState *ferry, alterations int) {
 }
 
 func (f *ferry) countVisibleOccupiedSeats(c coords) int {
-	runeToWeight := make(map[rune]int, 1)
-	runeToWeight[occupied] = 1 // free seats, floor and out-of-bounds are counted as Zero
 	var count int
-	count += runeToWeight[f.findClosestSeat(c, -1, -1)]
-	count += runeToWeight[f.findClosestSeat(c, -1, +0)]
-	count += runeToWeight[f.findClosestSeat(c, -1, +1)]
+	count += runeWeight[f.findClosestSeat(c, -1, -1)]
+	count += runeWeight[f.findClosestSeat(c, -1, +0)]
+	count += runeWeight[f.findClosestSeat(c, -1, +1)]
 
-	count += runeToWeight[f.findClosestSeat(c, +0, -1)]
-	count += runeToWeight[f.findClosestSeat(c, +0, +1)]
+	count += runeWeight[f.findClosestSeat(c, +0, -1)]
+	count += runeWeight[f.findClosestSeat(c, +0, +1)]
 
-	count += runeToWeight[f.findClosestSeat(c, +1, -1)]
-	count += runeToWeight[f.findClosestSeat(c, +1, +0)]
-	count += runeToWeight[f.findClosestSeat(c, +1, +1)]
+	count += runeWeight[f.findClosestSeat(c, +1, -1)]
+	count += runeWeight[f.findClosestSeat(c, +1, +0)]
+	count += runeWeight[f.findClosestSeat(c, +1, +1)]
 	return count
 }
 
