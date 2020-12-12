@@ -22,33 +22,19 @@ func main() {
 type route []instruction
 
 type instruction struct {
-	action int
+	action rune
 	amount int
 }
 
 func newRoute(rawRoute string) route {
 	route := route{}
-	mapping := strings.NewReplacer(
-		"N", strconv.Itoa(north),
-		"S", strconv.Itoa(south),
-		"E", strconv.Itoa(east),
-		"W", strconv.Itoa(west),
-		"L", strconv.Itoa(turnLeft),
-		"R", strconv.Itoa(turnRight),
-		"F", strconv.Itoa(forward),
-	)
 	for _, dataLine := range strings.Split(rawRoute, "\n") {
-		dataLine = mapping.Replace(dataLine)
-		action, err := strconv.Atoi(dataLine[0:1])
-		if err != nil {
-			panic(err)
-		}
 		amount, err := strconv.Atoi(dataLine[1:])
 		if err != nil {
 			panic(err)
 		}
 		inst := instruction{}
-		inst.action = action
+		inst.action = rune(dataLine[0])
 		inst.amount = amount
 		route = append(route, inst)
 	}
@@ -70,7 +56,7 @@ func newShip() *ship {
 	}
 }
 
-var cardinalityMovement = map[int][2]int{
+var cardinalityMovement = map[rune][2]int{
 	north: [2]int{+0, +1},
 	south: [2]int{+0, -1},
 	east:  [2]int{+1, +0},
@@ -87,7 +73,8 @@ func (s *ship) followRoutePartOne(r route) {
 			s.rotation -= inst.amount
 
 		case forward:
-			movement = cardinalityMovement[mod(s.rotation%360/90, 4)]
+			facingCardinality := rotationToCardinality[mod(s.rotation, 360)]
+			movement = cardinalityMovement[facingCardinality]
 
 		default:
 			movement = cardinalityMovement[inst.action]

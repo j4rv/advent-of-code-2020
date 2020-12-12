@@ -1,14 +1,21 @@
 package main
 
 const (
-	north = iota
-	east
-	south
-	west
-	turnLeft
-	turnRight
-	forward
+	north     = 'N'
+	east      = 'E'
+	south     = 'S'
+	west      = 'W'
+	turnLeft  = 'L'
+	turnRight = 'R'
+	forward   = 'F'
 )
+
+var rotationToCardinality = map[int]rune{
+	0:   north,
+	90:  east,
+	180: south,
+	270: west,
+}
 
 const exampleData = `F10
 N3
