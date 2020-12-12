@@ -1,39 +1,20 @@
 package main
 
-/*
-   Action N means to move north by the given value.
-   Action S means to move south by the given value.
-   Action E means to move east by the given value.
-   Action W means to move west by the given value.
-   Action L means to turn left the given number of degrees.
-   Action R means to turn right the given number of degrees.
-   Action F means to move forward by the given value in the direction the ship is currently facing.
-*/
-
 const (
-	north     = iota // = 0 * 90 deg
-	east             // = 1 * 90 deg
-	south            // = 2 * 90 deg
-	west             // = 3 * 90 deg
-	turnLeft         // = 4
-	turnRight        // = 5
-	forward          // = 6
+	north = iota
+	east
+	south
+	west
+	turnLeft
+	turnRight
+	forward
 )
-
-var actionRuneToConst = map[rune]int{
-	'N': north,
-	'S': south,
-	'E': east,
-	'W': west,
-	'L': turnLeft,
-	'R': turnRight,
-	'F': forward,
-}
 
 const exampleData = `F10
 N3
 F7
-R90
+R180
+L90
 F11`
 
 const data = `F99

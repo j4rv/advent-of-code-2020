@@ -7,10 +7,16 @@ import (
 )
 
 func main() {
+	// Part One
 	route := newRoute(data)
 	ship := newShip()
-	ship.followRoute(route)
-	log.Println("Part One solution:", calcManhattan(0, 0, ship.x, ship.y))
+	ship.followRoutePartOne(route)
+	log.Println("Part One solution:", manhattan(0, 0, ship.x, ship.y))
+
+	// Part Two
+	ship = newShip()
+	ship.followRoutePartTwo(route)
+	log.Println("Part Two solution:", manhattan(0, 0, ship.x, ship.y))
 }
 
 type route []instruction
@@ -50,12 +56,18 @@ func newRoute(rawRoute string) route {
 }
 
 type ship struct {
-	x, y     int
-	rotation int // rotation = degrees / 90
+	x, y      int
+	rotation  int
+	waypointX int
+	waypointY int
 }
 
 func newShip() *ship {
-	return &ship{rotation: east}
+	return &ship{
+		rotation:  90, // starts facing east
+		waypointX: 10,
+		waypointY: 1,
+	}
 }
 
 var cardinalityMovement = map[int][2]int{
@@ -65,16 +77,18 @@ var cardinalityMovement = map[int][2]int{
 	west:  [2]int{-1, +0},
 }
 
-func (s *ship) followRoute(r route) {
+func (s *ship) followRoutePartOne(r route) {
 	for _, inst := range r {
 		var movement [2]int
 		switch inst.action {
-		case turnLeft:
-			s.rotate(inst.amount, -1)
 		case turnRight:
-			s.rotate(inst.amount, +1)
+			s.rotation += inst.amount
+		case turnLeft:
+			s.rotation -= inst.amount
+
 		case forward:
-			movement = cardinalityMovement[s.rotation]
+			movement = cardinalityMovement[mod(s.rotation%360/90, 4)]
+
 		default:
 			movement = cardinalityMovement[inst.action]
 		}
@@ -83,12 +97,35 @@ func (s *ship) followRoute(r route) {
 	}
 }
 
-func (s *ship) rotate(deg, mult int) int {
-	s.rotation = mod(s.rotation+mult*(deg%360)/90, 4)
-	return s.rotation
+func (s *ship) followRoutePartTwo(r route) {
+	for _, inst := range r {
+		switch inst.action {
+		case turnLeft: // invert the angles and use the turn right logic
+			inst.amount = mod(-inst.amount, 360)
+			fallthrough
+		case turnRight:
+			switch inst.amount {
+			case 90:
+				s.waypointX, s.waypointY = +s.waypointY, -s.waypointX
+			case 180:
+				s.waypointX, s.waypointY = -s.waypointX, -s.waypointY
+			case 270:
+				s.waypointX, s.waypointY = -s.waypointY, +s.waypointX
+			}
+
+		case forward:
+			s.x += s.waypointX * inst.amount
+			s.y += s.waypointY * inst.amount
+
+		default:
+			mov := cardinalityMovement[inst.action]
+			s.waypointX += mov[0] * inst.amount
+			s.waypointY += mov[1] * inst.amount
+		}
+	}
 }
 
-func calcManhattan(startX, startY, endX, endY int) int {
+func manhattan(startX, startY, endX, endY int) int {
 	diffX := abs(startX - endX)
 	diffY := abs(startY - endY)
 	return diffX + diffY
