@@ -125,7 +125,7 @@ func abs(i int) int {
 	return i
 }
 
-// % is not module in golang ლಠ益ಠ)ლ
+// % is not modulo in golang ლಠ益ಠ)ლ
 func mod(val, m int) int {
 	val = val % m
 	if val < 0 {
