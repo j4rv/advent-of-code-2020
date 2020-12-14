@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Part One
-	memory := make(map[uint64]uint36)
+	memory := make(map[uint64]uint64)
 	maskRgx := regexp.MustCompile("^mask = (.+)$")
 	memRgx := regexp.MustCompile("^mem\\[(\\d+)\\] = (\\d+)$")
 	setMask, clrMask := uint64(0), ^uint64(0)
@@ -24,7 +24,7 @@ func main() {
 		value |= setMask
 		value &= clrMask
 		address := mustAtoui(memMatch[1])
-		memory[address] = toInt36(value)
+		memory[address] = value
 	}
 
 	var sum uint64
@@ -34,7 +34,7 @@ func main() {
 	log.Println("Part One solution:", sum)
 
 	// Part Two
-	memory = make(map[uint64]uint36) // reset memory from part one
+	memory = make(map[uint64]uint64) // reset memory from part one
 	var mask string
 	for _, dataLine := range strings.Split(data, "\n") {
 		maskMatch := maskRgx.FindStringSubmatch(dataLine)
@@ -71,7 +71,7 @@ func main() {
 
 		value := mustAtoui(memMatch[2])
 		for _, address := range addresses {
-			memory[address] = toInt36(value)
+			memory[address] = value
 		}
 	}
 
@@ -82,26 +82,15 @@ func main() {
 	log.Println("Part Two solution:", sum)
 }
 
-type uint36 uint64
-
-func toInt36(i uint64) uint36 {
-	mask := uint64(137438953471) // 0000000000000000000000000001111111111111111111111111111111111111
-	i &= mask
-	return uint36(i)
+func mustAtoui(s string) uint64 {
+	i, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return i
 }
 
-func bitAt(val uint64, index int) uint64 {
-	mask := uint64(1) << index
-	return (val & mask) >> index
-}
-
-func setBit(index int, b uint64) uint64 {
-	return b | (1 << index)
-}
-
-func clrBit(index int, b uint64) uint64 {
-	return b & ^(1 << index)
-}
+// For Part One
 
 func processMask(s string) (uint64, uint64) {
 	var setMask, clrMask uint64
@@ -119,10 +108,17 @@ func processMask(s string) (uint64, uint64) {
 	return setMask, ^clrMask
 }
 
-func mustAtoui(s string) uint64 {
-	i, err := strconv.ParseUint(s, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	return i
+// For Part Two
+
+func bitAt(val uint64, index int) uint64 {
+	mask := uint64(1) << index
+	return (val & mask) >> index
+}
+
+func setBit(index int, b uint64) uint64 {
+	return b | (1 << index)
+}
+
+func clrBit(index int, b uint64) uint64 {
+	return b & ^(1 << index)
 }
