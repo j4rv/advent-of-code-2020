@@ -9,29 +9,23 @@ import (
 func main() {
 	// Part One
 	var busIDs []int
+	var remainders []int
 	splitData := strings.Split(data, "\n")
 	startTime, err := strconv.Atoi(splitData[0])
 	if err != nil {
 		panic("start time not a number")
 	}
-	for _, rawBusID := range strings.Split(splitData[1], ",") {
-		busID, err := strconv.Atoi(rawBusID)
-		if err != nil {
-			continue
-		}
-		busIDs = append(busIDs, busID)
-	}
-	calcPartOne(startTime, busIDs)
-
-	// PartTwo
-	var remainders []int
 	for i, rawBusID := range strings.Split(splitData[1], ",") {
 		busID, err := strconv.Atoi(rawBusID)
 		if err != nil {
 			continue
 		}
+		busIDs = append(busIDs, busID)
 		remainders = append(remainders, mod(-i, busID)) // Positive modulo of (-i % busID)
 	}
+	calcPartOne(startTime, busIDs)
+
+	// Part Two
 	calcPartTwo(busIDs, remainders)
 }
 
