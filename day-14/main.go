@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+var maskRgx = regexp.MustCompile("^mask = (.+)$")
+var memRgx = regexp.MustCompile("^mem\\[(\\d+)\\] = (\\d+)$")
+
 func main() {
 	runPartOne(data)
 	runPartTwo(data)
@@ -24,8 +27,6 @@ func mustAtoui(s string) uint64 {
 
 func runPartOne(data string) {
 	memory := make(map[uint64]uint64)
-	maskRgx := regexp.MustCompile("^mask = (.+)$")
-	memRgx := regexp.MustCompile("^mem\\[(\\d+)\\] = (\\d+)$")
 
 	var setMask, clrMask uint64
 	for _, dataLine := range strings.Split(data, "\n") {
@@ -66,9 +67,7 @@ func processMask(s string) (setMask uint64, clrMask uint64) {
 // Part Two
 
 func runPartTwo(data string) {
-	memory := make(map[uint64]uint64) // reset memory from part one
-	maskRgx := regexp.MustCompile("^mask = (.+)$")
-	memRgx := regexp.MustCompile("^mem\\[(\\d+)\\] = (\\d+)$")
+	memory := make(map[uint64]uint64)
 
 	var mask string
 	for _, dataLine := range strings.Split(data, "\n") {
@@ -91,17 +90,17 @@ func runPartTwo(data string) {
 			case '0':
 				for j := range addresses {
 					if bitAt(address, bitIndex) == 1 {
-						addresses[j] = setBit(bitIndex, addresses[j])
+						addresses[j] = setBit(addresses[j], bitIndex)
 					}
 				}
 			case '1':
 				for j := range addresses {
-					addresses[j] = setBit(bitIndex, addresses[j])
+					addresses[j] = setBit(addresses[j], bitIndex)
 				}
 			case 'X':
 				for j := range addresses {
-					addresses = append(addresses, addresses[j])   // with bit 0
-					addresses[j] = setBit(bitIndex, addresses[j]) // with bit 1
+					addresses = append(addresses, addresses[j])   // with bit at bitIndex = 0
+					addresses[j] = setBit(addresses[j], bitIndex) // with bit at bitIndex = 1
 				}
 			}
 		}
@@ -124,10 +123,6 @@ func bitAt(val uint64, index int) uint64 {
 	return (val & mask) >> index
 }
 
-func setBit(index int, b uint64) uint64 {
-	return b | (1 << index)
-}
-
-func clrBit(index int, b uint64) uint64 {
-	return b & ^(1 << index)
+func setBit(val uint64, index int) uint64 {
+	return val | (1 << index)
 }
