@@ -99,16 +99,15 @@ func newGrid(rawGrid string) grid {
 func (g grid) relevantCoordsForNextState() []coords {
 	coordsSet := make(map[coords]struct{}, len(g.cubes))
 	for coord := range g.cubes {
+		var neighbors []coords
 		if g.useFourthDimension {
-			for _, neighbor := range coord.neighborCoords4D() {
-				coordsSet[neighbor] = struct{}{}
-			}
+			neighbors = coord.neighborCoords4D()
 		} else {
-			for _, neighbor := range coord.neighborCoords3D() {
-				coordsSet[neighbor] = struct{}{}
-			}
+			neighbors = coord.neighborCoords3D()
 		}
-
+		for _, neighbor := range neighbors {
+			coordsSet[neighbor] = struct{}{}
+		}
 	}
 	// map keySet to slice
 	coordsSlice := make([]coords, len(coordsSet))
@@ -122,19 +121,19 @@ func (g grid) relevantCoordsForNextState() []coords {
 
 func (g grid) activeNeighbors(c coords) int {
 	var count int
+	var neighbors []coords
+
 	if g.useFourthDimension {
-		for _, neighbor := range c.neighborCoords4D() {
-			if _, active := g.cubes[neighbor]; active {
-				count++
-			}
-		}
+		neighbors = c.neighborCoords4D()
 	} else {
-		for _, neighbor := range c.neighborCoords3D() {
-			if _, active := g.cubes[neighbor]; active {
-				count++
-			}
+		neighbors = c.neighborCoords3D()
+	}
+	for _, neighbor := range neighbors {
+		if _, active := g.cubes[neighbor]; active {
+			count++
 		}
 	}
+
 	return count
 }
 
