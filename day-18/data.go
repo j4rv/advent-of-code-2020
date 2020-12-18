@@ -1,15 +1,14 @@
 package main
 
-type operator int
+type operator byte
 
+// operators enum (pls VSCode stop complaining)
 const (
 	MUL operator = iota
 	ADD
 	LEP // LEFT PARENTHESIS
 	RIP // RIGHT PARENTHESIS
 )
-
-const exampleData = `1 + (2 * 3) + (4 * (5 + 6))`
 
 const data = `3 * (2 + (9 * 2 * 2 + 8) * (7 * 6 * 7 * 3) * (3 * 9 * 7) * (6 * 6)) * 9 * 8 + 6
 6 + 4 + 6 * 2 + 5 * (8 + 5 + 5 + (8 * 7 + 2 + 6 * 5 * 4))
