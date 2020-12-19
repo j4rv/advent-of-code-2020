@@ -44,6 +44,7 @@ func unloopWithDepth(rawRules string, depth int) string {
 	var unlooped string
 	for _, line := range strings.Split(rawRules, "\n") {
 		newLine := line
+		// unloop rule 8
 		if string(line[0:2]) == "8:" {
 			rule := "42"
 			for i := 2; i < depth; i++ {
@@ -54,6 +55,7 @@ func unloopWithDepth(rawRules string, depth int) string {
 			}
 			newLine = "8: " + rule
 		}
+		// unloop rule 11
 		if string(line[0:3]) == "11:" {
 			rule := "42 31"
 			for i := 2; i < depth; i++ {
@@ -116,37 +118,6 @@ func parse(rawRules string) string {
 		}
 	}
 	return "^" + mem[0] + "$"
-}
-
-func subparse(ruleIndex int, rawRules []string, visited map[int]string) string {
-	tokens := strings.Fields(rawRules[ruleIndex])[1:] // ignore first token, it's the rule index
-
-	// base cases
-	if res, ok := visited[ruleIndex]; ok {
-		return res
-	}
-	if len(tokens) == 1 && tokens[0][0] == '"' {
-		return string(tokens[0][1])
-	}
-
-	// recursive case
-	res := "("
-	for _, tkn := range tokens {
-		switch c := tkn[0]; {
-		case '0' <= c && c <= '9':
-			i := mustAtoi(tkn)
-			res += subparse(i, rawRules, visited)
-		case c == '|':
-			res += "|"
-		default:
-			log.Fatal("non controlled case:", tkn)
-		}
-	}
-	res += ")"
-
-	visited[ruleIndex] = res
-
-	return res
 }
 
 // I should make an aocutils package...
