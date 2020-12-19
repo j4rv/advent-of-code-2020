@@ -11,17 +11,65 @@ import (
 func main() {
 	split := strings.Split(data, "\n\n")
 	rawRules, rawMessages := split[0], split[1]
+	solvePartOne(rawRules, rawMessages)
+	solvePartTwo(rawRules, rawMessages)
+}
 
-	rgx := parse(rawRules)
-	part1Rgx := regexp.MustCompile(rgx)
+func solvePartOne(rawRules, rawMessages string) {
+	rgx := regexp.MustCompile(parse(rawRules))
 
 	var counter int
 	for _, msg := range strings.Split(rawMessages, "\n") {
-		if part1Rgx.MatchString(msg) {
+		if rgx.MatchString(msg) {
 			counter++
 		}
 	}
-	log.Println(counter)
+	log.Println("Part One solution:", counter)
+}
+
+func solvePartTwo(rawRules, rawMessages string) {
+	unlooped := unloopWithDepth(rawRules, 6) // at 6+ depth, the answer is still 316. It will vary depending on the input
+	rgx := regexp.MustCompile(parse(unlooped))
+
+	var counter int
+	for _, msg := range strings.Split(rawMessages, "\n") {
+		if rgx.MatchString(msg) {
+			counter++
+		}
+	}
+	log.Println("Part Two solution:", counter)
+}
+
+func unloopWithDepth(rawRules string, depth int) string {
+	var unlooped string
+	for _, line := range strings.Split(rawRules, "\n") {
+		newLine := line
+		if string(line[0:2]) == "8:" {
+			rule := "42"
+			for i := 2; i < depth; i++ {
+				rule += " | "
+				for j := 0; j < i; j++ {
+					rule += " 42 "
+				}
+			}
+			newLine = "8: " + rule
+		}
+		if string(line[0:3]) == "11:" {
+			rule := "42 31"
+			for i := 2; i < depth; i++ {
+				rule += " | "
+				for j := 0; j < i; j++ {
+					rule += " 42 "
+				}
+				for j := 0; j < i; j++ {
+					rule += " 31 "
+				}
+			}
+			newLine = "11: " + rule
+		}
+		unlooped += newLine + "\n"
+	}
+	return unlooped[:len(unlooped)-1]
 }
 
 func parse(rawRules string) string {
@@ -47,7 +95,7 @@ func parse(rawRules string) string {
 				continue
 			}
 			// list of rules:
-			ruleRgx := "("
+			ruleRgx := "(?:"
 			for _, tkn := range tokens {
 				switch c := tkn[0]; {
 				case '0' <= c && c <= '9':
