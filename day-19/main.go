@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"regexp"
 	"strconv"
@@ -10,7 +11,10 @@ import (
 func main() {
 	split := strings.Split(data, "\n\n")
 	rawRules, rawMessages := split[0], split[1]
-	part1Rgx := regexp.MustCompile(parse(rawRules))
+
+	rgx := parse(rawRules)
+	part1Rgx := regexp.MustCompile(rgx)
+
 	var counter int
 	for _, msg := range strings.Split(rawMessages, "\n") {
 		if part1Rgx.MatchString(msg) {
@@ -21,7 +25,49 @@ func main() {
 }
 
 func parse(rawRules string) string {
-	return "^" + subparse(0, strings.Split(rawRules, "\n"), make(map[int]string)) + "$"
+	mem := make(map[int]string)
+	rules := strings.Split(rawRules, "\n")
+	for {
+		if _, ok := mem[0]; ok {
+			break
+		}
+	rulesLoop:
+		for _, rule := range rules {
+			tokens := strings.Fields(rule) // ignore first token, it's the rule index
+			var i int
+			fmt.Sscanf(tokens[0], "%d:", &i)
+			tokens = tokens[1:]
+			// visited check:
+			if _, ok := mem[i]; ok {
+				continue
+			}
+			// base case:
+			if len(tokens) == 1 && tokens[0][0] == '"' {
+				mem[i] = string(tokens[0][1])
+				continue
+			}
+			// list of rules:
+			ruleRgx := "("
+			for _, tkn := range tokens {
+				switch c := tkn[0]; {
+				case '0' <= c && c <= '9':
+					tknN := mustAtoi(tkn)
+					subRuleRgx, ok := mem[tknN]
+					if !ok {
+						continue rulesLoop
+					}
+					ruleRgx += subRuleRgx
+				case c == '|':
+					ruleRgx += "|"
+				default:
+					log.Fatal("non controlled case:", tkn)
+				}
+			}
+			ruleRgx += ")"
+			mem[i] = ruleRgx
+		}
+	}
+	return "^" + mem[0] + "$"
 }
 
 func subparse(ruleIndex int, rawRules []string, visited map[int]string) string {
