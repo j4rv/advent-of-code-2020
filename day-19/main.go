@@ -46,14 +46,7 @@ func unloopWithDepth(rawRules string, depth int) string {
 		newLine := line
 		// unloop rule 8
 		if string(line[0:2]) == "8:" {
-			rule := "42"
-			for i := 2; i < depth; i++ {
-				rule += " | "
-				for j := 0; j < i; j++ {
-					rule += " 42 "
-				}
-			}
-			newLine = "8: " + rule
+			newLine = "8: 42 +"
 		}
 		// unloop rule 11
 		if string(line[0:3]) == "11:" {
@@ -109,6 +102,8 @@ func parse(rawRules string) string {
 					ruleRgx += subRuleRgx
 				case c == '|':
 					ruleRgx += "|"
+				case c == '+':
+					ruleRgx += "+"
 				default:
 					log.Fatal("non controlled case:", tkn)
 				}
